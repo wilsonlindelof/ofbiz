@@ -125,7 +125,7 @@ public class CommunicationEventServices {
 
             // check for attachments
             boolean isMultiPart = false;
-            List <GenericValue> comEventContents = communicationEvent.getRelated("CommEventContentAssoc", null, null, false);
+            List <GenericValue> comEventContents = EntityQuery.use(delegator).from("CommEventContentAssoc").where("communicationEventId", communicationEventId).filterByDate().queryList();
             if (UtilValidate.isNotEmpty(comEventContents)) {
                 isMultiPart = true;
                 List<Map<String, ? extends Object>> bodyParts = new LinkedList<Map<String,? extends Object>>();
@@ -716,8 +716,8 @@ public class CommunicationEventServices {
             if (Debug.verboseOn()) Debug.logVerbose("Processing Incoming Email " + aboutThisEmail, module);
 
             // ignore the message when the spam status = yes
-            String spamHeaderName = EntityUtilProperties.getPropertyValue("general.properties", "mail.spam.name", "N", delegator);
-            String configHeaderValue = EntityUtilProperties.getPropertyValue("general.properties", "mail.spam.value", delegator);
+            String spamHeaderName = EntityUtilProperties.getPropertyValue("general", "mail.spam.name", "N", delegator);
+            String configHeaderValue = EntityUtilProperties.getPropertyValue("general", "mail.spam.value", delegator);
             //          only execute when config file has been set && header variable found
             if (!spamHeaderName.equals("N") && wrapper.getHeader(spamHeaderName) != null && wrapper.getHeader(spamHeaderName).length > 0) {
                 String msgHeaderValue = wrapper.getHeader(spamHeaderName)[0];
@@ -1123,7 +1123,7 @@ public class CommunicationEventServices {
         Map<String, Object> result = null;
         Delegator delegator = dispatcher.getDelegator();
         List<Map<String, Object>> tempResults = new LinkedList<Map<String,Object>>();
-        String caseInsensitiveEmail = EntityUtilProperties.getPropertyValue("general.properties", "mail.address.caseInsensitive", "N", delegator);
+        String caseInsensitiveEmail = EntityUtilProperties.getPropertyValue("general", "mail.address.caseInsensitive", "N", delegator);
 
         if (addresses != null) {
             for (Address addr: addresses) {
